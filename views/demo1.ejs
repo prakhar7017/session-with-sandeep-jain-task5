@@ -1,0 +1,79 @@
+<fieldset>
+    <div class="form-card">
+      <div class="row">
+        <div class="col-7">
+          <h2 class="fs-title">Make Payment</h2>
+        </div>
+        <div class="col-5">
+          <h2 class="steps">Step 3 - 4</h2>
+        </div>
+      </div>
+      <div>
+        <button id="rzp-button1">Pay</button>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script>
+          document.getElementById('rzp-button1').onclick = async function (e) {
+            e.preventDefault();
+
+            let response = await fetch("/payments", {
+              method: "POST",
+              Headers: {
+                "content-type": "application/json",
+              },
+              body: JSON.stringify({
+                amount: 2000,
+                currency: "INR"
+              }),
+            });
+
+
+            let orderData = await response.json();
+
+            var options = {
+              key: "rzp_test_42HT4PuykzwauI",
+              amount: "2000  ",
+              currency: "INR",
+              name: "Interactive Session With Sandeep Jain",
+              description: "Test Transaction",
+              order_id: orderData.order.id,
+              handler: function (response) {
+                alert(response.razorpay_payment_id);
+                alert(response.razorpay_order_id);
+                alert(response.razorpay_signature);
+
+                let verificarion=axios.post("/api/payment/verify",{
+                  method:"POST",
+                  timeout:0,
+                  headers:{
+                    "Content-Type": "application/json"
+                  },
+                  data:{
+                     razorpay_order_id:response.razorpay_order_id,
+                     razorpay_payment_id:response.razorpay_payment_id,
+                     razorpay_signature:response.razorpay_signature,
+                    }
+                  })
+                  alert(verificarion);
+                  
+                },
+                theme: {
+                  color: "#3399cc"
+                }
+              };
+            var rzp1 = new Razorpay(options);
+            rzp1.on('payment.failed', function (response) {
+              alert(response.error.code);
+              alert(response.error.description);
+              alert(response.error.source);
+              alert(response.error.step);
+              alert(response.error.reason);
+              alert(response.error.metadata.order_id);
+              alert(response.error.metadata.payment_id);
+            });
+            rzp1.open();
+          }
+          </script>
+      </div>
+      <input type="button" name="previous" class="previous action-button-previous" value="Previous" />
+      <button type="submit">Submit</button>
+  </fieldset>
