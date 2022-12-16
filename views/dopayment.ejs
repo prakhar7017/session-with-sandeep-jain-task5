@@ -31,7 +31,7 @@
     document.getElementById('rzp-button1').onclick = async function (e) {
       e.preventDefault();
 
-      let response = await fetch("/payments", {
+      let response = await fetch("https://shy-lime-bee-suit.cyclic.app/payments", {
         method: "POST",
         Headers: {
           "content-type": "application/json",
